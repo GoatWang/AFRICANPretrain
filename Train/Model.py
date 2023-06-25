@@ -120,23 +120,26 @@ class FrameIdenetity(pl.LightningModule):
         else:
             assert False, f"Unknown optimizer: {optimizer}"
 
-        if self.decay_power == "cosine":
-            scheduler = get_cosine_schedule_with_warmup(
-                optimizer,
-                num_warmup_steps=self.warmup_steps,
-                num_training_steps=self.max_steps,
-            )
-        elif self.decay_power == "poly":
-            scheduler = get_polynomial_decay_schedule_with_warmup(
-                optimizer,
-                num_warmup_steps=self.warmup_steps,
-                num_training_steps=self.max_steps,
-                lr_end=self.end_lr,
-                power=self.poly_decay_power,
-            )
-        sched = {"scheduler": scheduler, "interval": "step"}
+        if self.decay_power == "no_decay":
+            return optimizer
+        else:
+            if self.decay_power == "cosine":
+                scheduler = get_cosine_schedule_with_warmup(
+                    optimizer,
+                    num_warmup_steps=self.warmup_steps,
+                    num_training_steps=self.max_steps,
+                )
+            elif self.decay_power == "poly":
+                scheduler = get_polynomial_decay_schedule_with_warmup(
+                    optimizer,
+                    num_warmup_steps=self.warmup_steps,
+                    num_training_steps=self.max_steps,
+                    lr_end=self.end_lr,
+                    power=self.poly_decay_power,
+                )
+            sched = {"scheduler": scheduler, "interval": "step"}
 
-        return ([optimizer], [sched])    
+            return ([optimizer], [sched])    
     
 if __name__ == "__main__":    
     import numpy as np
