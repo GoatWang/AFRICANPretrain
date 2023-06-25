@@ -14,7 +14,7 @@ from transformers import (
     get_cosine_schedule_with_warmup,
 )
 
-class FrameIdenetity(pl.LightningModule):
+class VideoFrameIdenetity(pl.LightningModule):
     def __init__(self, config):
         super().__init__()
         self.save_hyperparameters()
@@ -49,6 +49,11 @@ class FrameIdenetity(pl.LightningModule):
             self.freeze_image_encoder()
         if config['train_laryers'] == "vision_proj":
             self.freeze_image_encoder_except_proj()
+
+    def load_ckpt_state_dict(self, ckpt_fp):
+        ckpt = torch.load(ckpt_fp, map_location="cpu")
+        state_dict = ckpt["state_dict"]
+        self.load_state_dict(state_dict, strict=False)
 
     def set_loss_func(self, loss_name): # BCE recommend
         self.loss_func = get_loss_func(loss_name)()
@@ -87,7 +92,8 @@ class FrameIdenetity(pl.LightningModule):
         ground_truth = torch.stack([labels_onehot[b] for b in range(B)]).to(frame_logits.device).view(-1)
         loss = self.loss_func(frame_logits, ground_truth.type(torch.float32))
         self.train_metrics.update(frame_logits, ground_truth)
-        self.log("train_loss", loss, on_step=False, on_epoch=True)
+        self.log("train_loss", loss)
+        # self.log("train_loss", loss, on_step=False, on_epoch=True)
         return loss
 
     def on_train_epoch_end(self):
@@ -104,7 +110,8 @@ class FrameIdenetity(pl.LightningModule):
         ground_truth = torch.stack([labels_onehot[b] for b in range(B)]).to(frame_logits.device).view(-1)
         loss = self.loss_func(frame_logits, ground_truth.type(torch.float32))
         self.valid_metrics.update(frame_logits, ground_truth)
-        self.log("valid_loss", loss, on_step=False, on_epoch=True)
+        # self.log("valid_loss", loss, on_step=False, on_epoch=True)
+        self.log("valid_loss", loss)
 
     def on_validation_epoch_end(self):
         _valid_metrics = self.valid_metrics.compute()
@@ -155,11 +162,11 @@ if __name__ == "__main__":
     dataset_valid = AnimalKingdomDataset(_config, split="val")
 
     _config['max_steps'] = _config['max_epochs'] * len(dataset_train) // _config['batch_size']
-    model = FrameIdenetity(_config)
+    model = VideoFrameIdenetity(_config)
     model.set_loss_func(_config['loss'])
-    # weight_fp = os.path.join(os.path.dirname(__file__), "weights", "epoch=2-step=9003.ckpt")
-    # if os.path.exists(weight_fp):
-    #     model.load_ckpt(weight_fp)
+    # ckpt_fp = os.path.join(os.path.dirname(__file__), "weights", "epoch=2-step=9003.ckpt")
+    # if os.path.exists(ckpt_fp):
+    #     model.load_ckpt_state_dict(ckpt_fp)
 
     train_loader = utils.data.DataLoader(dataset_train, batch_size=1, shuffle=True) # TODO: DEBUG num_workers=4, maybe MACOS bug
     valid_loader = utils.data.DataLoader(dataset_valid, batch_size=1, shuffle=False) # TODO: DEBUG num_workers=4, maybe MACOS bug
