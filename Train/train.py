@@ -50,5 +50,5 @@ def main(_config):
                         logger=csv_logger, 
                         #  logger=wandb_logger, 
                         callbacks=[checkpoint_callback, lr_callback, summary_callback])
-    trainer.fit(model, train_dataloaders=train_loader, val_dataloaders=valid_loader, ckpt_path=_config['animal_kingdom_clip_path'])
+    trainer.fit(model, train_dataloaders=train_loader, val_dataloaders=valid_loader, ckpt_path=_config['ckpt_path'])
 

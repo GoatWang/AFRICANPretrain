@@ -34,3 +34,4 @@ def config():
     # for model
     loss = "BCE" # "BCE", "FOCAL", "LDAM", "EQL"
     train_laryers = "all" # all, vision_proj, None
+    ckpt_path = None
