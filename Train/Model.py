@@ -26,7 +26,7 @@ class FrameIdenetity(pl.LightningModule):
         self.end_lr = config['end_lr']
         self.poly_decay_power = config['poly_decay_power']
 
-        config_fp = "open_clip/model_configs/ViT-L-14.json"
+        config_fp = os.path.join(os.path.dirname(__file__), "open_clip/model_configs/ViT-L-14.json")
         with open(config_fp, 'r') as f:
             model_config = json.load(f)
         self.image_encoder = _build_vision_tower(model_config['embed_dim'], model_config['vision_cfg'])

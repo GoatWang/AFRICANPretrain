@@ -1,6 +1,6 @@
 import os
 from sacred import Experiment
-ex = Experiment("AnimalKingdomCLIP")
+ex = Experiment("VideoFrameIdentityNetwork")
 base_dir = os.path.dirname(__file__)
 
 @ex.config
