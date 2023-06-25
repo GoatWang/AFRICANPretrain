@@ -4,10 +4,10 @@ import torch
 import numpy as np
 from pathlib import Path
 from torch import utils
-from Model import FrameIdenetity
 from config import ex, config
 import pytorch_lightning as pl
 from datetime import datetime
+from Model import VideoFrameIdenetity
 from Dataset import AnimalKingdomDataset
 torch.manual_seed(0)
 
@@ -24,7 +24,7 @@ def main(_config):
     dataset_valid = AnimalKingdomDataset(_config, split="val")
     _config['max_steps'] = _config['max_epochs'] * len(dataset_train) // _config['batch_size']
 
-    model = FrameIdenetity(_config).to(_config['device'])
+    model = VideoFrameIdenetity(_config).to(_config['device'])
     model.set_loss_func(_config['loss'])
 
     train_loader = utils.data.DataLoader(dataset_train, batch_size=_config['batch_size'], shuffle=True, num_workers=_config["data_workers"]) # bugs on MACOS
