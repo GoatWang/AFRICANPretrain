@@ -87,7 +87,7 @@ class FrameIdenetity(pl.LightningModule):
         ground_truth = torch.stack([labels_onehot[b] for b in range(B)]).to(frame_logits.device).view(-1)
         loss = self.loss_func(frame_logits, ground_truth.type(torch.float32))
         self.train_metrics.update(frame_logits, ground_truth)
-        self.log("train_loss", loss)
+        self.log("train_loss", loss, on_step=True, on_epoch=False)
         return loss
 
     def on_train_epoch_end(self):
@@ -104,7 +104,7 @@ class FrameIdenetity(pl.LightningModule):
         ground_truth = torch.stack([labels_onehot[b] for b in range(B)]).to(frame_logits.device).view(-1)
         loss = self.loss_func(frame_logits, ground_truth.type(torch.float32))
         self.valid_metrics.update(frame_logits, ground_truth)
-        self.log("valid_loss", loss)
+        self.log("valid_loss", loss, on_step=True, on_epoch=False)
 
     def on_validation_epoch_end(self):
         _valid_metrics = self.valid_metrics.compute()
@@ -112,8 +112,6 @@ class FrameIdenetity(pl.LightningModule):
         self.valid_metrics.reset()
 
     def configure_optimizers(self):
-        # TODO: add parameter groups
-        # TODO: add lr scheduler
         if self.optimizer == 'adam':
             optimizer = torch.optim.Adam([p for p in self.parameters() if p.requires_grad], lr=self.lr)
         elif self.optimizer == 'adamw':
