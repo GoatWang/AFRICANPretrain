@@ -32,11 +32,11 @@ def main(_config):
 
     checkpoint_callback = pl.callbacks.ModelCheckpoint(
         dirpath=_config['models_dir'], 
-        filename='{epoch}-{valid_Accuracy:.3f}-{valid_BinaryPrecision:.3f}-{valid_BinaryRecall:.3f}',
+        filename='{epoch}-{valid_BinaryAccuracy:.3f}-{valid_BinaryPrecision:.3f}-{valid_BinaryRecall:.3f}',
         verbose=True,
         save_top_k=3, 
         every_n_epochs=1,
-        monitor="valid_Accuracy", 
+        monitor="valid_BinaryAccuracy", 
         mode="max", 
         save_last=True)
     summary_callback = pl.callbacks.ModelSummary(max_depth=1)
