@@ -87,7 +87,7 @@ class FrameIdenetity(pl.LightningModule):
         ground_truth = torch.stack([labels_onehot[b] for b in range(B)]).to(frame_logits.device).view(-1)
         loss = self.loss_func(frame_logits, ground_truth.type(torch.float32))
         self.train_metrics.update(frame_logits, ground_truth)
-        self.log("train_loss", loss, on_step=False, on_epoch=False)
+        self.log("train_loss", loss, on_step=False, on_epoch=True)
         return loss
 
     def on_train_epoch_end(self):
@@ -104,7 +104,7 @@ class FrameIdenetity(pl.LightningModule):
         ground_truth = torch.stack([labels_onehot[b] for b in range(B)]).to(frame_logits.device).view(-1)
         loss = self.loss_func(frame_logits, ground_truth.type(torch.float32))
         self.valid_metrics.update(frame_logits, ground_truth)
-        self.log("valid_loss", loss, on_step=False, on_epoch=False)
+        self.log("valid_loss", loss, on_step=False, on_epoch=True)
 
     def on_validation_epoch_end(self):
         _valid_metrics = self.valid_metrics.compute()
