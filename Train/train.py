@@ -50,7 +50,7 @@ def main(_config):
                         logger=[csv_logger, wandb_logger], 
                         # log_every_n_steps=50, # 
                         limit_train_batches=_config['limit_train_batches'],
-                        limit_valid_batches=_config['limit_val_batches'],
+                        limit_val_batches=_config['limit_valid_batches'],
                         log_every_n_steps=(len(dataset_train) // _config['batch_size']) // 3,
                         callbacks=[checkpoint_callback, lr_callback, summary_callback])
     trainer.fit(model, train_dataloaders=train_loader, val_dataloaders=valid_loader, ckpt_path=_config['ckpt_path'])
