@@ -27,9 +27,11 @@ def config():
     end_lr = 0.0 # for poly decay
     poly_decay_power = 1 # for poly decay
 
+    # for dataset
     version = None
     data_workers = 12
     functional_test_size = None
+    data_perc_each_class = 0.2
     
     # for model
     loss = "BCE" # "BCE", "FOCAL", "LDAM", "EQL"
