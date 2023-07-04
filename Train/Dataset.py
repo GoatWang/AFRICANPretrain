@@ -17,7 +17,7 @@ class AnimalKingdomDataset(torch.utils.data.Dataset):
         self.data_dir = config['data_dir']
         self.num_frames = config['num_frames']
         self.video_sampling = config['video_sampling']
-        self.training_test_size = config['training_test_size']
+        self.functional_test_size = config['functional_test_size']
 
         self.video_transform = VideoTransformTorch(mode=self.split)  # train or val model
         self.video_aug = video_aug
@@ -37,7 +37,7 @@ class AnimalKingdomDataset(torch.utils.data.Dataset):
         df_out['video_fp'] = df_out['original_vido_id'].apply(video_id_mapping.get)
         df_out['labels'] = df_out['labels'].apply(lambda x: [int(l) for l in x.split(",")])
         df_out = df_out[df_out['video_fp'].notnull()].reset_index(drop=True)
-        end_idx = self.training_test_size if self.training_test_size else len(df_out)
+        end_idx = self.functional_test_size if self.functional_test_size else len(df_out)
         return df_out['video_fp'].loc[:end_idx].tolist(), df_out['labels'].loc[:end_idx].tolist()
 
     def load_metadata(self):

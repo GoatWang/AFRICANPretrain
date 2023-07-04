@@ -14,10 +14,10 @@ torch.manual_seed(0)
 @ex.automain
 def main(_config):
     _config = copy.deepcopy(_config)
-    datestime_tr = datetime.now().strftime("%Y%m%d-%H%M%S")
-    model_version = _config['version'] if _config['version'] is not None else datestime_tr
-    _config['models_dir'] = os.path.join(_config["model_dir"], _config["name"], model_version)
-    Path(_config['models_dir']).mkdir(parents=True, exist_ok=True)
+    datestime_str = datetime.now().strftime("%Y%m%d-%H%M%S")
+    model_version = _config['version'] if _config['version'] is not None else datestime_str
+    _config['model_dir'] = os.path.join(_config["model_dir"], _config["name"], model_version)
+    Path(_config['model_dir']).mkdir(parents=True, exist_ok=True)
 
     pl.seed_everything(_config["seed"])
     dataset_train = AnimalKingdomDataset(_config, split="train")
@@ -31,7 +31,7 @@ def main(_config):
     valid_loader = utils.data.DataLoader(dataset_valid, batch_size=_config['batch_size'], shuffle=False, num_workers=_config["data_workers"]) # bugs on MACOS
 
     checkpoint_callback = pl.callbacks.ModelCheckpoint(
-        dirpath=_config['models_dir'], 
+        dirpath=_config['model_dir'], 
         filename='{epoch}-{valid_BinaryAccuracy:.3f}-{valid_BinaryPrecision:.3f}-{valid_BinaryRecall:.3f}',
         verbose=True,
         save_top_k=3, 
@@ -42,13 +42,12 @@ def main(_config):
     summary_callback = pl.callbacks.ModelSummary(max_depth=1)
     lr_callback = pl.callbacks.LearningRateMonitor(logging_interval="step")
 
-    csv_logger = pl.loggers.CSVLogger(save_dir=_config["log_dir"], name=_config['name'], version=datestime_tr)
+    csv_logger = pl.loggers.CSVLogger(save_dir=_config["log_dir"], name=_config['name'], version=datestime_str)
     csv_logger.log_hyperparams(_config)
-    # wandb_logger = pl.loggers.WandbLogger(project='AnimalKingdom', save_dir=_config["log_dir"], name=_config['name'], version=_config['version'])
-    # wandb_logger.experiment.config.update(_config)
+    wandb_logger = pl.loggers.WandbLogger(project='AnimalKingdom', save_dir=_config["log_dir"], name=_config['name'], version=model_version)
+    wandb_logger.experiment.config.update(_config, allow_val_change=True)
     trainer = pl.Trainer(max_epochs=_config['max_epochs'], 
-                        logger=csv_logger, 
-                        #  logger=wandb_logger, 
+                        logger=[csv_logger, wandb_logger], 
                         log_every_n_steps=(len(dataset_train) // _config['batch_size']) // 3,
                         callbacks=[checkpoint_callback, lr_callback, summary_callback])
     trainer.fit(model, train_dataloaders=train_loader, val_dataloaders=valid_loader, ckpt_path=_config['ckpt_path'])

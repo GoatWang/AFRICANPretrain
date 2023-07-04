@@ -18,7 +18,7 @@ def config():
     # for training
     num_frames = 8
     video_sampling = 'sequence_rand'
-    batch_size = 8
+    batch_size = 16
     max_epochs = 100
     lr = 0.0001
     optimizer = "adamw" # adam or adamw
@@ -28,8 +28,8 @@ def config():
     poly_decay_power = 1 # for poly decay
 
     version = None
-    data_workers = 4
-    training_test_size = None
+    data_workers = 12
+    functional_test_size = None
     
     # for model
     loss = "BCE" # "BCE", "FOCAL", "LDAM", "EQL"
