@@ -31,7 +31,8 @@ def config():
     version = None
     data_workers = 12
     functional_test_size = None
-    data_perc_each_class = 0.2
+    limit_train_batches = 0.2
+    limit_valid_batches = 0.2
     
     # for model
     loss = "BCE" # "BCE", "FOCAL", "LDAM", "EQL"

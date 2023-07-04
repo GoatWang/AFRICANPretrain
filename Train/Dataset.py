@@ -18,7 +18,6 @@ class AnimalKingdomDataset(torch.utils.data.Dataset):
         self.num_frames = config['num_frames']
         self.video_sampling = config['video_sampling']
         self.functional_test_size = config['functional_test_size']
-        self.data_perc_each_class = config['data_perc_each_class']
 
         self.video_transform = VideoTransformTorch(mode=self.split)  # train or val model
         self.video_aug = video_aug
@@ -65,7 +64,7 @@ class AnimalKingdomDataset(torch.utils.data.Dataset):
         return (video_tensor1, video_tensor2), labels
     
     def __len__(self):
-        return int(len(self.video_fps) * self.data_perc_each_class)
+        return len(self.video_fps)
 
 if __name__  == "__main__":
     from config import config
