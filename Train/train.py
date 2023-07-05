@@ -34,7 +34,7 @@ def main(_config):
         dirpath=_config['model_dir'], 
         filename='{epoch}-{valid_BinaryAccuracy:.3f}-{valid_BinaryPrecision:.3f}-{valid_BinaryRecall:.3f}',
         verbose=True,
-        save_top_k=3, 
+        save_top_k=1, 
         every_n_epochs=1,
         monitor="valid_BinaryAccuracy", 
         mode="max", 
