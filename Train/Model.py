@@ -61,7 +61,7 @@ class VideoFrameIdenetity(pl.LightningModule):
         self.load_state_dict(state_dict, strict=False)
 
     def set_loss_func(self, loss_name): # BCE recommend
-        self.loss_func = get_loss_func(loss_name)()
+        self.loss_func = get_loss_func(loss_name)
 
     def freeze_image_encoder(self):
         for n, p in self.named_parameters():
