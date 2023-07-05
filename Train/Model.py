@@ -34,8 +34,8 @@ class VideoFrameIdenetity(pl.LightningModule):
         self.image_encoder = _build_vision_tower(model_config['embed_dim'], model_config['vision_cfg'])
         if config['clip_fp'] is not None:
             clip_model = torch.jit.load(config['clip_fp'])
-            model.image_encoder.load_state_dict(clip_model.visual.state_dict())        
-            
+            self.image_encoder.load_state_dict(clip_model.visual.state_dict())        
+
         self.logit_scale = torch.nn.Parameter(torch.ones([]) * np.log(1 / 0.07))
 
         metric_collection = torchmetrics.MetricCollection([
