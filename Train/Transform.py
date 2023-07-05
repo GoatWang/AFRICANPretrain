@@ -2,7 +2,7 @@
 # Originally for V100 GPU
 def VideoTransformSelfdefined(mode='train', crop_size=224):
     from torchvision import transforms
-    import Transform.VideoTransform as video_transform
+    import video_transform
     # https://github.com/FingerRec/BE/blob/main/src/Contrastive/augment/video_transformations/volume_transforms.py
 
     input_mean = [0.48145466, 0.4578275, 0.40821073]
@@ -11,12 +11,11 @@ def VideoTransformSelfdefined(mode='train', crop_size=224):
     if mode == 'train':
         global_transforms = transforms.Compose([
             video_transform.TensorToNumpy(),
-            # video_transform.Resize(int(crop_size * 1.2)),  # 256/224 = 1.14
             video_transform.Resize(scale_size),
             video_transform.RandomCrop(crop_size),
-            # video_transform.ColorJitter(0.5, 0.5, 0.25, 0.5),  # color operation perimitted, damage attribute
+            video_transform.RandomRotation(5),  # Added
+            video_transform.ColorJitter(0.8, 0.8, 0.4, 0.4),  # color operation perimitted, damage attribute
             video_transform.ClipToTensor(channel_nb=3),
-            # video_transform.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
             video_transform.Normalize(mean=input_mean, std=input_std)
         ])
         local_transforms = transforms.Compose([
@@ -127,9 +126,12 @@ if __name__ == "__main__":
     Path(save_dir).mkdir(parents=True, exist_ok=True)
     
     frames, frame_idxs, vlen = read_frames_decord(video_fp, num_frames=8, sample=_config['video_sampling'])
-    transforms = VideoTransformTorch(mode='train')
-    # transforms = VideoTransformSelfdefined(mode='train')
+    # transforms = VideoTransformTorch(mode='train')
+    transforms = VideoTransformSelfdefined(mode='train')
+    import time
+    start = time.time()
     frames_trans = video_aug(frames, transforms, byte=False)
+    print(time.time() - start)
     for frame, frame_idx in zip(frames_trans, frame_idxs):
         frame_out = frame.numpy().transpose(1, 2, 0)
         minval, maxval = frame_out.min(), frame_out.max()
