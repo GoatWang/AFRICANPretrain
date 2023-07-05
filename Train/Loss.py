@@ -188,7 +188,7 @@ _LOSSES = {
     "EQL": EQL,
 }
 
-def get_loss_func(loss_name, class_frequency, device):
+def get_loss_func(loss_name):
     """
     Retrieve the loss given the loss name.
     Args (int):
@@ -203,10 +203,10 @@ def get_loss_func(loss_name, class_frequency, device):
         if len(parameters) > 0:
             gamma = int(parameters[0])
         return FocalLoss(gamma=gamma)
-    elif "LDAM" in loss_name:
-        return LDAM(class_frequency, device)
-    elif "EQL" in loss_name:
-        return EQL(class_frequency, device)
+    # elif "LDAM" in loss_name:
+    #     return LDAM(class_frequency, device)
+    # elif "EQL" in loss_name:
+    #     return EQL(class_frequency, device)
     else:
         raise NotImplementedError("Loss {} is not supported".format(loss_name))
 
