@@ -30,7 +30,12 @@ class VideoFrameIdenetity(pl.LightningModule):
         config_fp = os.path.join(os.path.dirname(__file__), "open_clip/model_configs/ViT-L-14.json")
         with open(config_fp, 'r') as f:
             model_config = json.load(f)
+
         self.image_encoder = _build_vision_tower(model_config['embed_dim'], model_config['vision_cfg'])
+        if config['clip_fp'] is not None:
+            clip_model = torch.jit.load(config['clip_fp'])
+            model.image_encoder.load_state_dict(clip_model.visual.state_dict())        
+            
         self.logit_scale = torch.nn.Parameter(torch.ones([]) * np.log(1 / 0.07))
 
         metric_collection = torchmetrics.MetricCollection([

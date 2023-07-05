@@ -6,7 +6,7 @@ base_dir = os.path.dirname(__file__)
 @ex.config
 def config():
     # basic
-    name = "VideoFrameIdentityNetwork"
+    name = "VideoFrameIdentityNetwork" # <clip/init>_<BCE/FOCAL>_<bs>
     seed = 2023
     device = 'cpu' # cuda
 
@@ -33,7 +33,8 @@ def config():
     functional_test_size = None
     limit_train_batches = 0.2
     limit_valid_batches = 0.2
-    
+    clip_fp = None # os.path.join(base_dir, "pretrain", "ViT-L-14.pt")
+
     # for model
     loss = "BCE" # "BCE", "FOCAL", "LDAM", "EQL"
     train_laryers = "all" # all, vision_proj, None
