@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 from pathlib import Path
 from VideoReader import read_frames_decord
-from Transform import VideoTransformSelfdefined, video_aug
+from Transform import VideoTransformTorch, VideoTransformSelfdefined, video_aug
 
 class AnimalKingdomDataset(torch.utils.data.Dataset):
     def __init__(self, config, split=""):
@@ -19,7 +19,8 @@ class AnimalKingdomDataset(torch.utils.data.Dataset):
         self.video_sampling = config['video_sampling']
         self.functional_test_size = config['functional_test_size']
 
-        self.video_transform = VideoTransformSelfdefined(mode='train')  # NOTICE: all split shuould be augmentated
+        self.video_transform = VideoTransformTorch(mode='train')  # NOTICE: all split shuould be augmentated
+        # self.video_transform = VideoTransformSelfdefined(mode='train')  # NOTICE: all split shuould be augmentated
         self.video_aug = video_aug
         self.load_metadata()
 
