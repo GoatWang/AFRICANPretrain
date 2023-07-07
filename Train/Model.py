@@ -86,7 +86,7 @@ class VideoFrameIdenetity(pl.LightningModule):
     # def cal_similiarity(self, frame_feat1, frame_feat2):
     #     # (8, 768) @ (768, 8) -> (8, 8)
     #     frame_similiarity_logits = frame_feat1 @ frame_feat2.t() * self.logit_scale.exp()
-    #     return frame_similiarity_logits.sigmoid()
+    #     return frame_similiarity_logits
     
     def cal_similarity_parallel(self, frame_feat1, frame_feat2):
         # (B, 8, 768) @ (B, 768, 8) -> (B, 8, 8)
@@ -97,7 +97,7 @@ class VideoFrameIdenetity(pl.LightningModule):
         _, labels_onehot = batch
         frame_feat1, frame_feat2 = self(batch)
 
-        # frame_logits = torch.stack([self.cal_similiarity(frame_feat1[b], frame_feat2[b]) for b in range(B)]).view(-1)
+        # frame_logits = torch.stack([self.cal_similiarity(frame_feat1[b], frame_feat2[b]) for b in range(B)]).view(-1, labels_onehot.shape[-1])
         frame_logits = self.cal_similarity_parallel(frame_feat1, frame_feat2)
         ground_truth = labels_onehot.to(frame_logits.device).view(-1, labels_onehot.shape[-1])
         loss = self.loss_func(frame_logits, ground_truth.type(torch.float32))
@@ -114,10 +114,9 @@ class VideoFrameIdenetity(pl.LightningModule):
         _, labels_onehot = batch
         frame_feat1, frame_feat2 = self(batch)
 
-        B = labels_onehot.shape[0]
-        # frame_logits = torch.stack([self.cal_similiarity(frame_feat1[b], frame_feat2[b]) for b in range(B)]).view(-1)
+        # frame_logits = torch.stack([self.cal_similiarity(frame_feat1[b], frame_feat2[b]) for b in range(B)]).view(-1, labels_onehot.shape[-1])
         frame_logits = self.cal_similarity_parallel(frame_feat1, frame_feat2)
-        ground_truth = torch.stack([labels_onehot[b] for b in range(B)]).to(frame_logits.device).view(-1)
+        ground_truth = labels_onehot.to(frame_logits.device).view(-1, labels_onehot.shape[-1])
         loss = self.loss_func(frame_logits, ground_truth.type(torch.float32))
         self.valid_metrics.update(frame_logits, ground_truth)
         self.log("valid_loss", loss)
