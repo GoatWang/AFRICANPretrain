@@ -91,7 +91,7 @@ class VideoFrameIdenetity(pl.LightningModule):
     def cal_similarity_parallel(self, frame_feat1, frame_feat2):
         # (B, 8, 768) @ (B, 768, 8) -> (B, 8, 8)
         frame_similiarity_logits = torch.bmm(frame_feat1, frame_feat2.transpose(1, 2)) * self.logit_scale.exp()
-        return frame_similiarity_logits.view(frame_similiarity_logits.shape[0], -1)
+        return frame_similiarity_logits.view(-1, frame_similiarity_logits.shape[-1])
 
     def training_step(self, batch, batch_idx):
         _, labels_onehot = batch
@@ -99,7 +99,7 @@ class VideoFrameIdenetity(pl.LightningModule):
 
         # frame_logits = torch.stack([self.cal_similiarity(frame_feat1[b], frame_feat2[b]) for b in range(B)]).view(-1)
         frame_logits = self.cal_similarity_parallel(frame_feat1, frame_feat2)
-        ground_truth = labels_onehot.to(frame_logits.device).view(labels_onehot.shape[0], -1)
+        ground_truth = labels_onehot.to(frame_logits.device).view(-1, labels_onehot.shape[-1])
         loss = self.loss_func(frame_logits, ground_truth.type(torch.float32))
         self.train_metrics.update(frame_logits, ground_truth)
         self.log("train_loss", loss)
