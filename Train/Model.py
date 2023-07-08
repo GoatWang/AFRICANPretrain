@@ -26,6 +26,7 @@ class VideoFrameIdenetity(pl.LightningModule):
         self.max_steps = config['max_steps']
         self.end_lr = config['end_lr']
         self.poly_decay_power = config['poly_decay_power']
+        self.num_classes = config['num_frames']
 
         config_fp = os.path.join(os.path.dirname(__file__), "open_clip/model_configs/ViT-L-14.json")
         with open(config_fp, 'r') as f:
@@ -39,9 +40,10 @@ class VideoFrameIdenetity(pl.LightningModule):
         self.logit_scale = torch.nn.Parameter(torch.ones([]) * np.log(1 / 0.07))
 
         metric_collection = torchmetrics.MetricCollection([
-            torchmetrics.classification.BinaryAccuracy(),
-            torchmetrics.classification.BinaryPrecision(),
-            torchmetrics.classification.BinaryRecall()
+            torchmetrics.classification.MulticlassAccuracy(num_classes=self.num_classes),
+            torchmetrics.classification.MulticlassAveragePrecision(num_classes=self.num_classes),
+            torchmetrics.classification.MulticlassPrecision(num_classes=self.num_classes),
+            torchmetrics.classification.MulticlassRecall(num_classes=self.num_classes)
         ])
         self.train_metrics = metric_collection.clone(prefix='train_')
         self.valid_metrics = metric_collection.clone(prefix='valid_')

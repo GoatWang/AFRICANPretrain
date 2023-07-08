@@ -36,7 +36,7 @@ def main(_config):
         verbose=True,
         save_top_k=1, 
         every_n_epochs=1,
-        monitor="valid_BinaryAccuracy", 
+        monitor="valid_MulticlassAveragePrecision", 
         mode="max", 
         save_last=True)
     summary_callback = pl.callbacks.ModelSummary(max_depth=1)
