@@ -103,7 +103,7 @@ class VideoFrameIdenetity(pl.LightningModule):
         frame_logits = self.cal_similarity_parallel(frame_feat1, frame_feat2)
         ground_truth = labels_onehot.to(frame_logits.device).view(-1, labels_onehot.shape[-1])
         loss = self.loss_func(frame_logits, ground_truth.type(torch.float32))
-        self.train_metrics.update(torch.argmax(torch.softmax(frame_logits, dim=1), dim=1), torch.argmax(ground_truth, dim=1))
+        self.train_metrics.update(torch.softmax(frame_logits, dim=1), torch.argmax(ground_truth, dim=1))
         self.log("train_loss", loss)
         return loss
 
@@ -120,7 +120,7 @@ class VideoFrameIdenetity(pl.LightningModule):
         frame_logits = self.cal_similarity_parallel(frame_feat1, frame_feat2)
         ground_truth = labels_onehot.to(frame_logits.device).view(-1, labels_onehot.shape[-1])
         loss = self.loss_func(frame_logits, ground_truth.type(torch.float32))
-        self.valid_metrics.update(torch.argmax(torch.softmax(frame_logits, dim=1), dim=1), torch.argmax(ground_truth, dim=1))
+        self.valid_metrics.update(torch.softmax(frame_logits, dim=1), torch.argmax(ground_truth, dim=1))
         self.log("valid_loss", loss)
 
     def on_validation_epoch_end(self):
