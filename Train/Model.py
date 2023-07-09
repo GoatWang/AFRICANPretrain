@@ -91,8 +91,8 @@ class VideoFrameIdenetity(pl.LightningModule):
         (video_tensor1, video_tensor2), labels_onehot = batch
         frame_feat1 = self.forward_single_video(video_tensor1) # bs*8, 768
         frame_feat2 = self.forward_single_video(video_tensor2) # bs*8, 768
-        frame_feat1 = frame_feat1 / frame_feat1.norm(dim=1, keepdim=True)
-        frame_feat2 = frame_feat2 / frame_feat2.norm(dim=1, keepdim=True)
+        frame_feat1 = frame_feat1 / frame_feat1.norm(dim=2, keepdim=True)
+        frame_feat2 = frame_feat2 / frame_feat2.norm(dim=2, keepdim=True)
         return (frame_feat1, frame_feat2)
         
     # def cal_similiarity(self, frame_feat1, frame_feat2):
