@@ -12,6 +12,7 @@ from open_clip import CLIPVisionCfg, _build_vision_tower, create_model_and_trans
 from transformers import (
     get_polynomial_decay_schedule_with_warmup,
     get_cosine_schedule_with_warmup,
+    get_linear_schedule_with_warmup
 )
 
 class VideoFrameIdenetity(pl.LightningModule):
@@ -139,7 +140,13 @@ class VideoFrameIdenetity(pl.LightningModule):
         if self.decay_power == "no_decay":
             return optimizer
         else:
-            if self.decay_power == "cosine":
+            if self.decay_power == "linear":
+                scheduler = get_linear_schedule_with_warmup(
+                    optimizer, 
+                    num_warmup_steps=self.warmup_steps, 
+                    num_training_steps=self.max_steps
+                )
+            elif self.decay_power == "cosine":
                 scheduler = get_cosine_schedule_with_warmup(
                     optimizer,
                     num_warmup_steps=self.warmup_steps,

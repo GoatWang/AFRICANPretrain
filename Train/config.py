@@ -22,7 +22,7 @@ def config():
     max_epochs = 100
     lr = 0.0001
     optimizer = "adamw" # adam or adamw
-    decay_power = "no_decay" # no_decay, poly, cosine
+    decay_power = "no_decay" # no_decay, poly, cosine, linear
     warmup_steps = 10000 # https://chat.openai.com/share/ff341d8f-77dc-4a57-bc3b-a47210fe6b2e
     end_lr = 0.0 # for poly decay
     poly_decay_power = 1 # for poly decay

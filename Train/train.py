@@ -30,15 +30,24 @@ def main(_config):
     train_loader = utils.data.DataLoader(dataset_train, batch_size=_config['batch_size'], shuffle=True, num_workers=_config["data_workers"]) # bugs on MACOS
     valid_loader = utils.data.DataLoader(dataset_valid, batch_size=_config['batch_size'], shuffle=False, num_workers=_config["data_workers"]) # bugs on MACOS
 
-    checkpoint_callback = pl.callbacks.ModelCheckpoint(
+    checkpoint_callback_loss = pl.callbacks.ModelCheckpoint(
         dirpath=_config['model_dir'], 
-        filename='{epoch}-{valid_BinaryAccuracy:.3f}-{valid_BinaryPrecision:.3f}-{valid_BinaryRecall:.3f}',
+        filename='loss_{epoch}-{valid_BinaryAccuracy:.3f}-{valid_BinaryPrecision:.3f}-{valid_BinaryRecall:.3f}',
+        verbose=True,
+        save_top_k=1, 
+        every_n_epochs=1,
+        monitor="valid_loss", 
+        mode="min", 
+        save_last=True)
+    checkpoint_callback_map = pl.callbacks.ModelCheckpoint(
+        dirpath=_config['model_dir'], 
+        filename='map_{epoch}-{valid_BinaryAccuracy:.3f}-{valid_BinaryPrecision:.3f}-{valid_BinaryRecall:.3f}',
         verbose=True,
         save_top_k=1, 
         every_n_epochs=1,
         monitor="valid_MulticlassAveragePrecision", 
         mode="max", 
-        save_last=True)
+        save_last=True)    
     summary_callback = pl.callbacks.ModelSummary(max_depth=1)
     lr_callback = pl.callbacks.LearningRateMonitor(logging_interval="step")
 
@@ -52,6 +61,6 @@ def main(_config):
                         limit_train_batches=_config['limit_train_batches'],
                         limit_val_batches=_config['limit_valid_batches'],
                         log_every_n_steps=(int(len(dataset_train)*_config['limit_train_batches']) // _config['batch_size']) // 3,
-                        callbacks=[checkpoint_callback, lr_callback, summary_callback])
+                        callbacks=[checkpoint_callback_loss, checkpoint_callback_map, lr_callback, summary_callback])
     trainer.fit(model, train_dataloaders=train_loader, val_dataloaders=valid_loader, ckpt_path=_config['ckpt_path'])
 
