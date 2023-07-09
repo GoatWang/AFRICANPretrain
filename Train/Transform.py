@@ -11,10 +11,11 @@ def VideoTransformSelfdefined(mode='train', crop_size=224):
     if mode == 'train':
         global_transforms = transforms.Compose([
             video_transform.TensorToNumpy(),
-            video_transform.Resize(scale_size),
+            # video_transform.Resize(scale_size),
+            video_transform.Resize(int(256 * 1.1)),
             video_transform.RandomCrop(crop_size),
-            video_transform.RandomRotation(5),  # Added
-            video_transform.ColorJitter(0.4, 0.4, 0.2, 0.2),  # color operation perimitted, damage attribute
+            video_transform.RandomRotation(8),  # Added
+            video_transform.ColorJitter(0.6, 0.6, 0.3, 0.3),  # color operation perimitted, damage attribute            
             video_transform.ClipToTensor(channel_nb=3),
             video_transform.Normalize(mean=input_mean, std=input_std)
         ])
