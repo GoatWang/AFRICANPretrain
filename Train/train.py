@@ -46,8 +46,7 @@ def main(_config):
         save_top_k=1, 
         every_n_epochs=1,
         monitor="valid_MulticlassAveragePrecision", 
-        mode="max", 
-        save_last=True)    
+        mode="max")    
     summary_callback = pl.callbacks.ModelSummary(max_depth=1)
     lr_callback = pl.callbacks.LearningRateMonitor(logging_interval="step")
 
@@ -58,7 +57,7 @@ def main(_config):
     trainer = pl.Trainer(max_epochs=_config['max_epochs'], 
                         logger=[csv_logger, wandb_logger], 
                         # log_every_n_steps=50, # 
-                        gradient_clip_val=0.5,
+                        # gradient_clip_val=0.5,
                         limit_train_batches=_config['limit_train_batches'],
                         limit_val_batches=_config['limit_valid_batches'],
                         log_every_n_steps=(int(len(dataset_train)*_config['limit_train_batches']) // _config['batch_size']) // 3,
