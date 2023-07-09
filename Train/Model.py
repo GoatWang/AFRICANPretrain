@@ -33,6 +33,13 @@ class VideoFrameIdenetity(pl.LightningModule):
         with open(config_fp, 'r') as f:
             model_config = json.load(f)
 
+        # "embed_dim": 768,
+        # "vision_cfg": {
+        #     "image_size": 224,
+        #     "layers": 24,
+        #     "width": 1024,
+        #     "patch_size": 14
+        # },
         self.image_encoder = _build_vision_tower(model_config['embed_dim'], model_config['vision_cfg'])
         if config['clip_fp'] is not None:
             clip_model = torch.jit.load(config['clip_fp'])
