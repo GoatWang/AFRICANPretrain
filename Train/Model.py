@@ -85,14 +85,13 @@ class VideoFrameIdenetity(pl.LightningModule):
         B, F, C, H, W = video_tensor.shape
         video_tensor = video_tensor.contiguous().view(B*F, C, H, W)
         frame_feat = self.image_encoder(video_tensor).view(B, F, -1) # B, F, 768
+        frame_feat = frame_feat / frame_feat.norm(dim=2, keepdim=True)
         return frame_feat
 
     def forward(self, batch, mode="video"):
         (video_tensor1, video_tensor2), labels_onehot = batch
-        frame_feat1 = self.forward_single_video(video_tensor1) # bs*8, 768
-        frame_feat2 = self.forward_single_video(video_tensor2) # bs*8, 768
-        frame_feat1 = frame_feat1 / frame_feat1.norm(dim=2, keepdim=True)
-        frame_feat2 = frame_feat2 / frame_feat2.norm(dim=2, keepdim=True)
+        frame_feat1 = self.forward_single_video(video_tensor1) # bs, 8, 768
+        frame_feat2 = self.forward_single_video(video_tensor2) # bs, 8, 768
         return (frame_feat1, frame_feat2)
         
     # def cal_similiarity(self, frame_feat1, frame_feat2):
