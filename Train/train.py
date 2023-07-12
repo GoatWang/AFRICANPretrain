@@ -32,21 +32,22 @@ def main(_config):
 
     checkpoint_callback_loss = pl.callbacks.ModelCheckpoint(
         dirpath=_config['model_dir'], 
-        filename='loss_{epoch}-{valid_BinaryAccuracy:.3f}-{valid_BinaryPrecision:.3f}-{valid_BinaryRecall:.3f}',
+        filename='loss_{epoch}-{valid_MulticlassAveragePrecision:.3f}-{valid_MulticlassAccuracy:.3f}',
         verbose=True,
         save_top_k=1, 
         every_n_epochs=1,
         monitor="valid_loss", 
         mode="min", 
         save_last=True)
+
     checkpoint_callback_map = pl.callbacks.ModelCheckpoint(
         dirpath=_config['model_dir'], 
-        filename='map_{epoch}-{valid_BinaryAccuracy:.3f}-{valid_BinaryPrecision:.3f}-{valid_BinaryRecall:.3f}',
+        filename='map_{epoch}-{valid_MulticlassAveragePrecision:.3f}-{valid_MulticlassAccuracy:.3f}',
         verbose=True,
         save_top_k=1, 
         every_n_epochs=1,
         monitor="valid_MulticlassAveragePrecision", 
-        mode="max")    
+        mode="max")            
     summary_callback = pl.callbacks.ModelSummary(max_depth=1)
     lr_callback = pl.callbacks.LearningRateMonitor(logging_interval="step")
 
