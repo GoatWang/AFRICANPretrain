@@ -75,9 +75,9 @@ class AnimalKingdomDatasetVisualize(AnimalKingdomDataset):
     def __getitem__(self, index):
         ret = None
         video_fp = self.video_fps[index]
-        video_frames, frame_idxs, vlen = read_frames_decord(video_fp, num_frames=self.num_frames, sample=self.video_sampling)
-        video_frames = self.video_aug(video_frames, self.video_transform).detach().cpu().numpy()
-        video_tensor = self.video_aug(video_frames, self.video_transform_norm)
+        video_frames_raw, frame_idxs, vlen = read_frames_decord(video_fp, num_frames=self.num_frames, sample=self.video_sampling)
+        video_frames = self.video_aug(video_frames_raw, self.video_transform).detach().cpu().numpy()
+        video_tensor = self.video_aug(video_frames_raw, self.video_transform_norm)
         return video_frames, video_tensor
     
     def __len__(self):
