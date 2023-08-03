@@ -90,13 +90,23 @@ def get_attention_map(img, img_tensor, model_visual, get_mask=False, device='cpu
     
     return mask, heatmap, result
 
-def plot_attention_map(original_img, att_map):
-    fig, (ax1, ax2) = plt.subplots(ncols=2, figsize=(10, 4))
+# def plot_attention_map(original_img, att_map):
+#     fig, (ax1, ax2) = plt.subplots(ncols=2, figsize=(10, 4))
+#     ax1.set_title('Original')
+#     ax2.set_title('Attention Map Last Layer')
+#     _ = ax1.imshow(original_img)
+#     _ = ax2.imshow(att_map)
+#     plt.show()
+
+def plot_attention_map(original_img, att_map_clip, att_map_africa):
+    fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(10, 4))
     ax1.set_title('Original')
-    ax2.set_title('Attention Map Last Layer')
-    _ = ax1.imshow(original_img)
-    _ = ax2.imshow(att_map)
-    plt.show()
+    ax2.set_title('Clip Heatmap')
+    ax3.set_title('Africa Heatmap')
+    ax1.imshow(original_img)
+    ax2.imshow(att_map_clip)
+    ax3.imshow(att_map_africa)
+    plt.show()    
 
 def convert_to_numpy_img(frame):
     frame_out = frame.detach().cpu().numpy().transpose(1, 2, 0)
@@ -114,24 +124,29 @@ def main(_config):
     _config['clip_fp'] = '/notebooks/VideoFrameIdentityNetwork/Train/pretrain/ViT-L-14.pt'
     dataset_valid = AnimalKingdomDatasetVisualize(_config, split="val")
 
+
     _config['max_steps'] = _config['max_epochs'] * len(dataset_valid) // _config['batch_size']
-    model = VideoFrameIdenetity(_config).to(_config['device'])
-    model.set_loss_func(_config['loss'])
-    if _config['ckpt_path'] is not None:
-        model.load_ckpt_state_dict(_config['ckpt_path'])
-    model.eval()
-    
-    i = 0
-    video_frames, video_tensor_aug = dataset_valid[i]
-    video_frames, video_tensor_aug = next(iter(valid_loader))
-    video_tensor_aug = video_tensor_aug.to(_config['device'])
+    model_clip = VideoFrameIdenetity(_config).to(_config['device'])
+    model_clip.eval()
 
-    img1 = video_frames
-    result1 = get_attention_map(video_frames, model.image_encoder, get_mask=False, device=_config['device'])
-    plot_attention_map(video_frames, result1)
-    get_attention_map()
-    # pooled, tokens, attn_output_weights_layers = forward_for_visual(model_visual, x1)
-    # print("len(attn_output_weights_layers)", len(attn_output_weights_layers))
-    # print("attn_output_weights_layers[0].shape", attn_output_weights_layers[0].shape)    
+    model_africa = VideoFrameIdenetity(_config).to(_config['device'])
+    model_africa.load_ckpt_state_dict(_config['ckpt_path'])
+    model_africa.eval()
+    print("model load success")
 
+    i = 161 # 30. 60, 80, 85, 90, 140, 147, 153
+    for i in range(i, i+5):
+        print(i)
+        video_frames, video_tensor = dataset_valid[i]
+        video_tensor = video_tensor.to(_config['device'])
+        print(video_frames.shape)
+        print(video_tensor.shape)
+
+        for i in range(8):
+            mask, heatmap, result_clip = get_attention_map(video_frames[i], video_tensor[i], model_clip.image_encoder, get_mask=True, device=_config['device'])
+            mask, heatmap, result_africa = get_attention_map(video_frames[i], video_tensor[i], model_africa.image_encoder, get_mask=True, device=_config['device'])
+            plot_attention_map(video_frames[i], result_clip, result_africa)
+
+            # TODO: savefig
+            # TODO: save as gif
 
