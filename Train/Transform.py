@@ -64,6 +64,23 @@ def VideoTransformTorch(mode='train', crop_size=224):
                                                     num_samples=None)  # not use temporal sub sampling
     return [global_transform, local_transform]
 
+def VideoTransformVisualize(crop_size=224):
+    import torchvision
+    import video_transform
+    transforms = torchvision.transforms.Compose([
+        video_transform.TensorToNumpy(),
+        video_transform.Resize(crop_size),  # 256
+    ])
+
+    transform_norm = torchvision.transforms.Compose([
+        video_transform.TensorToNumpy(),
+        video_transform.Resize(crop_size),  # 256
+        video_transform.ClipToTensor(channel_nb=3)
+    ])
+
+    return [[transforms, None], [transform_norm, None]]
+
+
 
 def video_aug(videos, video_transform, byte=False):
     if byte:
@@ -87,6 +104,9 @@ def video_aug(videos, video_transform, byte=False):
     global_videos_tensor = global_transform(videos).permute(1, 0, 2, 3)
     return global_videos_tensor
     # return [global_videos_tensor, local_videos_tensor]
+
+
+
 
 # # dino
 # def video_aug(videos, video_transform, byte=False):
