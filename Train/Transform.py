@@ -70,12 +70,16 @@ def VideoTransformVisualize(crop_size=224):
     transforms = torchvision.transforms.Compose([
         video_transform.TensorToNumpy(),
         video_transform.Resize(crop_size),  # 256
+        video_transform.ClipToTensor(channel_nb=3),
     ])
 
+    input_mean = [0.45, 0.45, 0.45]
+    input_std = [0.225, 0.225, 0.225]
     transform_norm = torchvision.transforms.Compose([
         video_transform.TensorToNumpy(),
         video_transform.Resize(crop_size),  # 256
-        video_transform.ClipToTensor(channel_nb=3)
+        video_transform.ClipToTensor(channel_nb=3),
+        video_transform.Normalize(mean=input_mean, std=input_std)
     ])
 
     return [[transforms, None], [transform_norm, None]]
