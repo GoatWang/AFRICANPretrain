@@ -1,8 +1,3 @@
-
-
-
-
-
 import os
 import cv2
 import copy
@@ -15,7 +10,6 @@ import pytorch_lightning as pl
 from datetime import datetime
 from Model import VideoFrameIdenetity
 from Dataset import AnimalKingdomDatasetVisualize
-torch.manual_seed(0)
 
 def forward_for_visual(x, model_visual):
     """
@@ -64,8 +58,8 @@ def forward_for_visual(x, model_visual):
     pooled = pooled @ model_visual.proj
     return pooled, tokens, attn_output_weights_layers
 
-def get_attention_map(x, model_visual, get_mask=False, device='cpu'):
-    pooled, tokens, attn_output_weights_layers = forward_for_visual(x, model_visual)
+def get_attention_map(img, img_tensor, model_visual, get_mask=False, device='cpu'):
+    pooled, tokens, attn_output_weights_layers = forward_for_visual(img_tensor.unsqueeze(0), model_visual)
     att_mat = torch.stack(attn_output_weights_layers).squeeze(1)
 
     # Average the attention weights across all heads.
