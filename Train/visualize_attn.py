@@ -8,6 +8,7 @@ from torch import utils
 from config import ex, config
 import pytorch_lightning as pl
 from datetime import datetime
+from matplotlib import pyplot as plt
 from Model import VideoFrameIdenetity
 from Dataset import AnimalKingdomDatasetVisualize
 
@@ -59,7 +60,8 @@ def forward_for_visual(x, model_visual):
     return pooled, tokens, attn_output_weights_layers
 
 def get_attention_map(img, img_tensor, model_visual, get_mask=False, device='cpu'):
-    pooled, tokens, attn_output_weights_layers = forward_for_visual(img_tensor.unsqueeze(0), model_visual)
+    with torch.no_grad():
+        pooled, tokens, attn_output_weights_layers = forward_for_visual(img_tensor.unsqueeze(0), model_visual)
     att_mat = torch.stack(attn_output_weights_layers).squeeze(1)
 
     # Average the attention weights across all heads.
@@ -74,27 +76,27 @@ def get_attention_map(img, img_tensor, model_visual, get_mask=False, device='cpu
     # Recursively multiply the weight matrices
     joint_attentions = torch.zeros(aug_att_mat.size()).to(device)
     joint_attentions[0] = aug_att_mat[0]
-
+    
     for n in range(1, aug_att_mat.size(0)):
         joint_attentions[n] = torch.matmul(aug_att_mat[n], joint_attentions[n-1])
-
+        
     v = joint_attentions[-1]
     grid_size = int(np.sqrt(aug_att_mat.size(-1)))
     mask = v[0, 1:].reshape(grid_size, grid_size).detach().cpu().numpy()
-    if get_mask:
-        result = cv2.resize(mask / mask.max(), img.size)
-    else:        
-        mask = cv2.resize(mask / mask.max(), img.size)[..., np.newaxis]
-        result = (mask * img).astype("uint8")
     
-    return result
+    mask = cv2.resize(mask / mask.max(), img.shape[:2])
+    heatmap = cv2.applyColorMap((mask*255).astype(np.uint8), cv2.COLORMAP_JET)
+    result = cv2.addWeighted(img, 0.7, heatmap, 0.3, 0.0)
+    
+    return mask, heatmap, result
 
 def plot_attention_map(original_img, att_map):
-    fig, (ax1, ax2) = plt.subplots(ncols=2, figsize=(16, 16))
+    fig, (ax1, ax2) = plt.subplots(ncols=2, figsize=(10, 4))
     ax1.set_title('Original')
     ax2.set_title('Attention Map Last Layer')
     _ = ax1.imshow(original_img)
     _ = ax2.imshow(att_map)
+    plt.show()
 
 def convert_to_numpy_img(frame):
     frame_out = frame.detach().cpu().numpy().transpose(1, 2, 0)
