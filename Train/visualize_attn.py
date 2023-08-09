@@ -90,23 +90,43 @@ def get_attention_map(img, img_tensor, model_visual, get_mask=False, device='cpu
     
     return mask, heatmap, result
 
-# def plot_attention_map(original_img, att_map):
-#     fig, (ax1, ax2) = plt.subplots(ncols=2, figsize=(10, 4))
+# def plot_attention_map(original_img, att_map_clip, att_map_africa):
+#     fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(10, 4))
 #     ax1.set_title('Original')
-#     ax2.set_title('Attention Map Last Layer')
-#     _ = ax1.imshow(original_img)
-#     _ = ax2.imshow(att_map)
-#     plt.show()
+#     ax2.set_title('Clip Heatmap')
+#     ax3.set_title('Africa Heatmap')
+#     ax1.imshow(original_img)
+#     ax2.imshow(att_map_clip)
+#     ax3.imshow(att_map_africa)
+#     plt.show()    
 
-def plot_attention_map(original_img, att_map_clip, att_map_africa):
-    fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(10, 4))
-    ax1.set_title('Original')
-    ax2.set_title('Clip Heatmap')
-    ax3.set_title('Africa Heatmap')
-    ax1.imshow(original_img)
-    ax2.imshow(att_map_clip)
-    ax3.imshow(att_map_africa)
-    plt.show()    
+def turn_off_axis_ticks(ax):
+    ax.axis('off')  # Turn off the axis lines
+    ax.set_xticks([])  # Turn off the x-axis ticks
+    ax.set_yticks([])  # Turn off the y-axis ticks
+    
+def plot_attention_map_v2(video_frames, video_tensor, model_clip, model_africa, fig_fp=None):
+    n_rows, n_cols = 3, 8
+    fig, axes = plt.subplots(n_rows, n_cols, figsize=(15, 5))
+    
+    for ci in range(n_cols):
+        mask, heatmap, result_clip = get_attention_map(video_frames[ci], video_tensor[ci], model_clip.image_encoder, get_mask=True, device=_config['device'])
+        mask, heatmap, result_africa = get_attention_map(video_frames[ci], video_tensor[ci], model_africa.image_encoder, get_mask=True, device=_config['device'])
+        axes[0][ci].imshow(video_frames[ci])
+        axes[1][ci].imshow(result_clip)
+        axes[2][ci].imshow(result_africa)
+        for ri in range(n_rows):
+            turn_off_axis_ticks(axes[ri][ci])
+
+    axes[0][0].set_title(f'Original', x=-0.15, y=0.2, rotation=90)
+    axes[1][0].set_title(f'Clip', x=-0.15, y=0.35, rotation=90)
+    axes[2][0].set_title(f'Africa', x=-0.15, y=0.25, rotation=90)
+
+    if fig_fp:
+        plt.savefig(fig_fp)
+        plt.close()
+    else:
+        plt.show()
 
 def convert_to_numpy_img(frame):
     frame_out = frame.detach().cpu().numpy().transpose(1, 2, 0)
@@ -124,7 +144,6 @@ def main(_config):
     _config['clip_fp'] = '/notebooks/VideoFrameIdentityNetwork/Train/pretrain/ViT-L-14.pt'
     dataset_valid = AnimalKingdomDatasetVisualize(_config, split="val")
 
-
     _config['max_steps'] = _config['max_epochs'] * len(dataset_valid) // _config['batch_size']
     model_clip = VideoFrameIdenetity(_config).to(_config['device'])
     model_clip.eval()
@@ -134,19 +153,26 @@ def main(_config):
     model_africa.eval()
     print("model load success")
 
-    i = 161 # 30. 60, 80, 85, 90, 140, 147, 153
-    for i in range(i, i+5):
-        print(i)
+    for i in [30, 60, 80, 85, 90, 140, 147, 153]:
         video_frames, video_tensor = dataset_valid[i]
         video_tensor = video_tensor.to(_config['device'])
-        print(video_frames.shape)
-        print(video_tensor.shape)
+        plot_attention_map_v2(video_frames, video_tensor, model_clip, model_africa, os.path.join(_config['attn_map_dir'], str(i).zfill(5) + ".png"))
 
-        for i in range(8):
-            mask, heatmap, result_clip = get_attention_map(video_frames[i], video_tensor[i], model_clip.image_encoder, get_mask=True, device=_config['device'])
-            mask, heatmap, result_africa = get_attention_map(video_frames[i], video_tensor[i], model_africa.image_encoder, get_mask=True, device=_config['device'])
-            plot_attention_map(video_frames[i], result_clip, result_africa)
+        
 
-            # TODO: savefig
-            # TODO: save as gif
+    # i = 161 # 
+    # for i in range(i, i+5):
+    #     print(i)
+    #     video_frames, video_tensor = dataset_valid[i]
+    #     video_tensor = video_tensor.to(_config['device'])
+    #     print(video_frames.shape)
+    #     print(video_tensor.shape)
+
+    #     for i in range(8):
+    #         mask, heatmap, result_clip = get_attention_map(video_frames[i], video_tensor[i], model_clip.image_encoder, get_mask=True, device=_config['device'])
+    #         mask, heatmap, result_africa = get_attention_map(video_frames[i], video_tensor[i], model_africa.image_encoder, get_mask=True, device=_config['device'])
+    #         plot_attention_map(video_frames[i], result_clip, result_africa)
+
+    #         # TODO: savefig
+    #         # TODO: save as gif
 
