@@ -142,6 +142,7 @@ def main(_config):
     _config['data_dir'] = '/storage/AnimalKingdom/action_recognition'
     _config['ckpt_path'] = "/notebooks/AnimalKingdomCLIP/Train/weights/clip_nodecay_infoNCE_8_rand_augmix_000030_epoch30.ckpt"
     _config['clip_fp'] = '/notebooks/VideoFrameIdentityNetwork/Train/pretrain/ViT-L-14.pt'
+    Path(_config['attn_map_dir']).mkdir(exist_ok=True, parents=True)
     dataset_valid = AnimalKingdomDatasetVisualize(_config, split="val")
 
     _config['max_steps'] = _config['max_epochs'] * len(dataset_valid) // _config['batch_size']
