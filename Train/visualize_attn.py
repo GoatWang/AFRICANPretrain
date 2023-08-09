@@ -115,12 +115,15 @@ def plot_attention_map_v2(video_frames, video_tensor, model_clip, model_africa, 
         axes[0][ci].imshow(video_frames[ci])
         axes[1][ci].imshow(result_clip)
         axes[2][ci].imshow(result_africa)
+
+        axes[0][ci].set_title(f"frame{ci+1}")
         for ri in range(n_rows):
             turn_off_axis_ticks(axes[ri][ci])
 
-    axes[0][0].set_title(f'Original', x=-0.15, y=0.2, rotation=90)
-    axes[1][0].set_title(f'Clip', x=-0.15, y=0.35, rotation=90)
-    axes[2][0].set_title(f'Africa', x=-0.15, y=0.25, rotation=90)
+    axes[0][0].set_ylabel('Raw')
+    axes[1][0].set_ylabel('Clip')
+    axes[2][0].set_ylabel('African')
+    plt.suptitle("Attention Heatmap")
 
     if fig_fp:
         plt.savefig(fig_fp)
