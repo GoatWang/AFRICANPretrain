@@ -137,6 +137,8 @@ def convert_to_numpy_img(frame):
 
 @ex.automain
 def main(_config):
+    _config = copy.deepcopy(_config)
+    
     _config['batch_size'] = 1
     _config['device'] = 'cuda'
     _config['data_dir'] = '/storage/AnimalKingdom/action_recognition'
