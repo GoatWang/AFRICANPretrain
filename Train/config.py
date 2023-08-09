@@ -39,3 +39,8 @@ def config():
     loss = "BCE" # "BCE", "FOCAL", "LDAM", "EQL"
     train_laryers = "all" # all, vision_proj, None
     ckpt_path = None
+
+    # attn_map_dir 
+    temp_dir = os.path.join(base_dir, "temp")
+    attn_map_dir = os.path.join(temp_dir, "attn_map")
+    
