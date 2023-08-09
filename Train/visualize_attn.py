@@ -101,7 +101,7 @@ def get_attention_map(img, img_tensor, model_visual, get_mask=False, device='cpu
 #     plt.show()    
 
 def turn_off_axis_ticks(ax):
-    ax.axis('off')  # Turn off the axis lines
+    # ax.axis('off')  # Turn off the axis lines
     ax.set_xticks([])  # Turn off the x-axis ticks
     ax.set_yticks([])  # Turn off the y-axis ticks
     
