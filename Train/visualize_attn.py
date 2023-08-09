@@ -105,13 +105,13 @@ def turn_off_axis_ticks(ax):
     ax.set_xticks([])  # Turn off the x-axis ticks
     ax.set_yticks([])  # Turn off the y-axis ticks
     
-def plot_attention_map_v2(video_frames, video_tensor, model_clip, model_africa, fig_fp=None):
+def plot_attention_map_v2(video_frames, video_tensor, model_clip, model_africa, device, fig_fp=None):
     n_rows, n_cols = 3, 8
     fig, axes = plt.subplots(n_rows, n_cols, figsize=(15, 5))
     
     for ci in range(n_cols):
-        mask, heatmap, result_clip = get_attention_map(video_frames[ci], video_tensor[ci], model_clip.image_encoder, get_mask=True, device=_config['device'])
-        mask, heatmap, result_africa = get_attention_map(video_frames[ci], video_tensor[ci], model_africa.image_encoder, get_mask=True, device=_config['device'])
+        mask, heatmap, result_clip = get_attention_map(video_frames[ci], video_tensor[ci], model_clip.image_encoder, get_mask=True, device=device)
+        mask, heatmap, result_africa = get_attention_map(video_frames[ci], video_tensor[ci], model_africa.image_encoder, get_mask=True, device=device)
         axes[0][ci].imshow(video_frames[ci])
         axes[1][ci].imshow(result_clip)
         axes[2][ci].imshow(result_africa)
@@ -138,7 +138,7 @@ def convert_to_numpy_img(frame):
 @ex.automain
 def main(_config):
     _config = copy.deepcopy(_config)
-    
+
     _config['batch_size'] = 1
     _config['device'] = 'cuda'
     _config['data_dir'] = '/storage/AnimalKingdom/action_recognition'
@@ -159,7 +159,8 @@ def main(_config):
     for i in [30, 60, 80, 85, 90, 140, 147, 153]:
         video_frames, video_tensor = dataset_valid[i]
         video_tensor = video_tensor.to(_config['device'])
-        plot_attention_map_v2(video_frames, video_tensor, model_clip, model_africa, os.path.join(_config['attn_map_dir'], str(i).zfill(5) + ".png"))
+        fig_fp = os.path.join(_config['attn_map_dir'], str(i).zfill(5) + ".png")
+        plot_attention_map_v2(video_frames, video_tensor, model_clip, model_africa, _config['device'], fig_fp)
 
         
 
