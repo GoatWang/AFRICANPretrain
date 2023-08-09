@@ -161,7 +161,7 @@ def main(_config):
         video_tensor = video_tensor.to(_config['device'])
         fig_fp = os.path.join(_config['attn_map_dir'], str(i).zfill(5) + ".png")
         plot_attention_map_v2(video_frames, video_tensor, model_clip, model_africa, _config['device'], fig_fp)
-
+        print("file saved to ", fig_fp)
         
 
     # i = 161 # 
