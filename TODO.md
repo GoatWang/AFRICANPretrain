@@ -22,3 +22,36 @@
 
 
 
+# Save Image Sameples
+```
+import os
+import cv2
+import sys
+from config import config
+sys.path.append("/notebooks/VideoFrameIdentityNetwork/Train")
+from pathlib import Path
+from matplotlib import pyplot as plt
+from Dataset import AnimalKingdomDatasetVisualize
+
+_config = config()
+_config['data_dir'] = '/storage/AnimalKingdom/action_recognition'
+dataset_valid = AnimalKingdomDatasetVisualize(_config, split="val")
+
+video_id = 5
+video_frames, video_tensor = dataset_valid[video_id]
+# video_frames = convert_to_numpy_img(video_frames)
+
+save_dir = os.path.join("/notebooks/VideoFrameIdentityNetwork/Train/temp", "samples", str(video_id).zfill(5))
+raw_dir = os.path.join(save_dir, "raw")
+Path(raw_dir).mkdir(exist_ok=True, parents=True)
+# grid_dir = os.path.join(save_dir, "grid")
+
+for i in range(8):
+    img_fp = os.path.join(raw_dir, str(i).zfill(5)+".png")
+    cv2.imwrite(img_fp, video_frames[i])
+    print("file save to", img_fp)
+    
+%cd /notebooks/VideoFrameIdentityNetwork/Train/temp
+!tar -cvzf samples.tar.gz samples
+%cd /notebooks
+```

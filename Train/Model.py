@@ -44,8 +44,10 @@ class VideoFrameIdenetity(pl.LightningModule):
         if config['clip_fp'] is not None:
             clip_model = torch.jit.load(config['clip_fp'])
             self.image_encoder.load_state_dict(clip_model.visual.state_dict())        
+            # logit_scale = clip_model.state_dict()['logit_scale'] #TODO
 
         self.logit_scale = torch.nn.Parameter(torch.ones([]) * np.log(1 / 0.07))
+        # self.logit_scale = torch.nn.Parameter(torch.ones([]) * logit_scale) #TODO
 
         metric_collection = torchmetrics.MetricCollection([
             torchmetrics.classification.MulticlassAccuracy(num_classes=self.num_classes),
@@ -136,6 +138,19 @@ class VideoFrameIdenetity(pl.LightningModule):
         _valid_metrics = self.valid_metrics.compute()
         self.log_dict(_valid_metrics)
         self.valid_metrics.reset()
+
+    def test_step(self, batch, batch_idx):
+        _, labels_onehot = batch
+        frame_feat1, frame_feat2 = self(batch)
+        frame_logits = self.cal_similarity_parallel(frame_feat1, frame_feat2)
+        ground_truth = labels_onehot.to(frame_logits.device).view(-1, labels_onehot.shape[-1])
+        loss = self.loss_func(frame_logits, ground_truth.type(torch.float32))
+        self.valid_metrics.update(torch.softmax(frame_logits, dim=1), torch.argmax(ground_truth, dim=1))
+
+    def on_test_epoch_end(self):
+        _valid_metrics = self.valid_metrics.compute()
+        self.valid_metrics.reset()
+        print(_valid_metrics)
 
     def configure_optimizers(self):
         if self.optimizer == 'adam':

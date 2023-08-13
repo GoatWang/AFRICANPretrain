@@ -17,7 +17,7 @@ def config():
 
     # for training
     num_frames = 8
-    video_sampling = 'uniform' # 'sequence_rand'
+    video_sampling = 'rand' # 'sequence_rand'
     batch_size = 16
     max_epochs = 100
     lr = 0.0001
