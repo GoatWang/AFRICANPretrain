@@ -27,7 +27,7 @@ def main(_config):
     trainer = pl.Trainer()
 
     # Test Clip
-    trainer.test(model, test_loader=test_loader)
+    trainer.test(model, dataloaders=test_loader)
 
     # Test AFRICAN
     model.load_ckpt_state_dict(_config['ckpt_path'])
