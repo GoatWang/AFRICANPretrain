@@ -26,6 +26,7 @@ def draw_3points(h, w, color='white'):
 def plot_contrastive_learning_structure(images_ci, images_ri, color='black', pad=30, gap=30, fig_fp=None):
     h, w = 224, 224
     n_rows, n_cols = len(images_ri), len(images_ci)
+
     images_ci = [img.resize((w, h)) for img in images_ci]
     images_ri = [img.resize((w, h)) for img in images_ri]
 
@@ -117,10 +118,15 @@ def main(_config):
         video_fp, video_frames_raw, video_frames1, video_frames2 = dataset_valid[idx]
         fig_fn = os.path.basename(video_fp).split('.')[0]
 
+
+
         cat_frames(video_frames_raw, fig_fp=os.path.join(save_dir_frame_concat, fig_fn+".png"))
         stack_frames(video_frames_raw, fig_fp=os.path.join(save_dir_frame_stack, fig_fn+".png"))
         stack_frames([draw_patches(f) for f in video_frames_raw], fig_fp=os.path.join(save_dir_frame_stack, fig_fn+"_patched.png"))
-        plot_contrastive_learning_structure(video_frames1[[1, 2, 3, 4, 5, 7]], video_frames2[[1, 2, 3, 4, 7]], color='white', pad=30, gap=30, fig_fp=os.path.join(save_dir_african, fig_fn+"_african.png"))
+
+        video_frames1 = [Image.fromarray(video_frames1[i]) for i in [1, 2, 3, 4, 5, 7]]
+        video_frames2 = [Image.fromarray(video_frames2[i]) for i in [1, 2, 3, 4, 5, 7]]
+        plot_contrastive_learning_structure(video_frames1, video_frames2, fig_fp=os.path.join(save_dir_african, fig_fn+"_african.png"))
 
         # for idx, frame in enumerate(video_frames_raw):
         #     fig_fp_raw = os.psth.join(save_dir_structure, fig_fn+"_raw_%02i.png"%idx)
