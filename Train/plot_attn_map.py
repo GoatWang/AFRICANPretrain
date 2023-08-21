@@ -148,7 +148,7 @@ def main(_config):
     _config['ckpt_path'] = "/notebooks/AnimalKingdomCLIP/Train/weights/clip_nodecay_infoNCE_8_rand_augmix_000030_epoch30.ckpt"
     _config['clip_fp'] = '/notebooks/VideoFrameIdentityNetwork/Train/pretrain/ViT-L-14.pt'
     Path(_config['attn_map_dir']).mkdir(exist_ok=True, parents=True)
-    dataset_valid = AnimalKingdomDatasetVisualize(_config, split="val")
+    dataset_valid = AnimalKingdomDatasetVisualize(_config, split="val", mode="attnmap")
 
     _config['max_steps'] = _config['max_epochs'] * len(dataset_valid) // _config['batch_size']
     model_clip = VideoFrameIdenetity(_config).to(_config['device'])
@@ -162,7 +162,7 @@ def main(_config):
     for i in [30, 60, 80, 85, 90, 140, 147, 153]:
         video_frames, video_tensor = dataset_valid[i]
         video_tensor = video_tensor.to(_config['device'])
-        fig_fp = os.path.join(_config['attn_map_dir'], str(i).zfill(5) + ".png")
+        fig_fp = os.path.join(_config['temp_dir'], "attn_map", str(i).zfill(5) + ".png")
         plot_attention_map_v2(video_frames, video_tensor, model_clip, model_africa, _config['device'], fig_fp)
         print("file saved to ", fig_fp)
         

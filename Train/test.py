@@ -33,7 +33,23 @@ def main(_config):
     model.load_ckpt_state_dict(_config['ckpt_path'])
     trainer.test(model, dataloaders=test_loader)
 
-
+# WARNING - VideoFrameIdentityNetwork - No observers have been added to this run
+# INFO - VideoFrameIdentityNetwork - Running command 'main'
+# INFO - VideoFrameIdentityNetwork - Started
+# Global seed set to 2023
+# GPU available: True (cuda), used: True
+# TPU available: False, using: 0 TPU cores
+# IPU available: False, using: 0 IPUs
+# HPU available: False, using: 0 HPUs
+# You are using a CUDA device ('NVIDIA A100-SXM4-80GB') that has Tensor Cores. To properly utilize them, you should set `torch.set_float32_matmul_precision('medium' | 'high')` which will trade-off precision for performance. For more details, read https://pytorch.org/docs/stable/generated/torch.set_float32_matmul_precision.html#torch.set_float32_matmul_precision
+# LOCAL_RANK: 0 - CUDA_VISIBLE_DEVICES: [0]
+# Testing DataLoader 0: 100%|█████████████████| 1524/1524 [37:19<00:00,  1.47s/it]{'valid_MulticlassAccuracy': tensor(0.3036, device='cuda:0'), 'valid_MulticlassAveragePrecision': tensor(0.2543, device='cuda:0'), 'valid_MulticlassPrecision': tensor(0.3030, device='cuda:0'), 'valid_MulticlassRecall': tensor(0.3036, device='cuda:0')}
+# Testing DataLoader 0: 100%|█████████████████| 1524/1524 [37:19<00:00,  1.47s/it]
+# You are using a CUDA device ('NVIDIA A100-SXM4-80GB') that has Tensor Cores. To properly utilize them, you should set `torch.set_float32_matmul_precision('medium' | 'high')` which will trade-off precision for performance. For more details, read https://pytorch.org/docs/stable/generated/torch.set_float32_matmul_precision.html#torch.set_float32_matmul_precision
+# LOCAL_RANK: 0 - CUDA_VISIBLE_DEVICES: [0]
+# Testing DataLoader 0: 100%|█████████████████| 1524/1524 [36:45<00:00,  1.45s/it]{'valid_MulticlassAccuracy': tensor(0.7929, device='cuda:0'), 'valid_MulticlassAveragePrecision': tensor(0.9020, device='cuda:0'), 'valid_MulticlassPrecision': tensor(0.7928, device='cuda:0'), 'valid_MulticlassRecall': tensor(0.7929, device='cuda:0')}
+# Testing DataLoader 0: 100%|█████████████████| 1524/1524 [36:45<00:00,  1.45s/it]
+# INFO - VideoFrameIdentityNetwork - Completed after 1:14:40
 
 # trained 
 # {'MulticlassAccuracy': tensor(0.7695, device='cuda:0'),

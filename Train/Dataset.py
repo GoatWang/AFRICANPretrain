@@ -68,21 +68,34 @@ class AnimalKingdomDataset(torch.utils.data.Dataset):
         return len(self.video_fps)
 
 class AnimalKingdomDatasetVisualize(AnimalKingdomDataset):
-    def __init__(self, config, split="val"):
+    def __init__(self, config, split="val", mode='attnmap'):
+        """
+        mode: {"simmat", "attnmap"}
+        """
         super().__init__(config, split)
-        self.video_transform, self.video_transform_norm = VideoTransformVisualize()
+        self.video_transform, self.video_transform_norm = AnimalKingdomDatasetVisualize()
+        self.mode = mode
 
     def __getitem__(self, index):
-        ret = None
         video_fp = self.video_fps[index]
-        video_frames_raw, frame_idxs, vlen = read_frames_decord(video_fp, num_frames=self.num_frames, sample=self.video_sampling)
-        video_frames = self.video_aug(video_frames_raw, self.video_transform).detach().cpu().numpy()
-        video_frames = (video_frames.transpose(0, 2, 3, 1) * 255).astype("uint8")
-        video_tensor = self.video_aug(video_frames_raw, self.video_transform_norm)
-        return video_frames, video_tensor
+        video_frames_raw, frame_idxs, vlen = read_frames_decord(video_fp, num_frames=self.num_frames, sample="uniform")
+        if self.mode == "attnmap":
+            video_frames = self.video_aug(video_frames_raw, self.video_transform).detach().cpu().numpy()
+            video_frames = (video_frames.transpose(0, 2, 3, 1) * 255).astype("uint8")
+            video_tensor = self.video_aug(video_frames_raw, self.video_transform_norm)
+            return video_frames, video_tensor
+        
+        elif self.mode == "simmat":
+            video_frames_raw_out = (video_frames_raw.transpose(0, 2, 3, 1) * 255).astype("uint8")
+            video_frames1 = self.video_aug(video_frames_raw, self.video_transform).detach().cpu().numpy()
+            video_frames1 = (video_frames.transpose(0, 2, 3, 1) * 255).astype("uint8")
+            video_frames2 = self.video_aug(video_frames_raw, self.video_transform).detach().cpu().numpy()
+            video_frames2 = (video_frames.transpose(0, 2, 3, 1) * 255).astype("uint8")
+            return video_fp, video_frames_raw_out, video_frames1, video_frames2
     
     def __len__(self):
         return len(self.video_fps)
+    
 
 
 if __name__  == "__main__":
