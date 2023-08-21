@@ -115,12 +115,9 @@ def main(_config):
         video_fp, video_frames_raw, video_frames1, video_frames2 = dataset_valid[idx]
         fig_fn = os.path.basename(video_fp).split('.')[0]
 
-        cat_frames(video_frames_raw, fig_fp=os.path.join(save_dir_frame_sim, fig_fn+".png"))
-        stack_frames(video_frames_raw, fig_fp=os.path.join(save_dir_sim_mat, fig_fn+"_raw.png"))
+        cat_frames(video_frames_raw, fig_fp=os.path.join(save_dir_frame_concat, fig_fn+".png"))
+        stack_frames(video_frames_raw, fig_fp=os.path.join(save_dir_frame_stack, fig_fn+".png"))
         plot_contrastive_learning_structure(video_frames1[[1, 2, 3, 4, 5, 7]], video_frames2[[1, 2, 3, 4, 7]], color='white', pad=30, gap=30, fig_fp=os.path.join(save_dir_african, fig_fn+"_african.png"))
-
-        cat_frames(video_frames1, fig_fp=os.path.join(save_dir_frame_concat, fig_fn+"_frame_concat.png"))
-        stack_frames(video_frames1, fig_fp=os.path.join(save_dir_frame_stack, fig_fn+"_frame_stack.png"))
 
         # for idx, frame in enumerate(video_frames_raw):
         #     fig_fp_raw = os.psth.join(save_dir_structure, fig_fn+"_raw_%02i.png"%idx)
