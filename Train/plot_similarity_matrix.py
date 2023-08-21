@@ -78,7 +78,6 @@ def plot_contrastive_learning_structure(images_ci, images_ri, color='black', pad
                 text = "1" if ri == ci else "0"
                 write_font(draw, text, x, y, color=color)
             elif (ci == (n_cols - 1)) and (ri == (n_rows - 1)):
-                print(ri, ci)
                 img = draw_3points(h, w, color=color)
                 canvas.paste(img.rotate(135), (int(x-w//2), int(y-h//2)))
             elif (ri == (n_rows - 1)):
@@ -119,13 +118,23 @@ def main(_config):
         video_fp, video_frames_raw, video_frames1, video_frames2 = dataset_valid[idx]
         fig_fn = os.path.basename(video_fp).split('.')[0]
 
-        cat_frames(video_frames_raw, fig_fp=os.path.join(save_dir_frame_concat, fig_fn+".png"))
-        stack_frames(video_frames_raw, fig_fp=os.path.join(save_dir_frame_stack, fig_fn+".png"))
-        stack_frames([draw_patches(f) for f in video_frames_raw], fig_fp=os.path.join(save_dir_frame_stack, fig_fn+"_patched.png"))
+        fig_fp_raw = os.path.join(save_dir_frame_concat, fig_fn+".png")
+        fig_fp_stack_raw = os.path.join(save_dir_frame_stack, fig_fn+".png")
+        fig_fp_stack_patch = os.path.join(save_dir_frame_stack, fig_fn+"_patched.png")
+        fig_fp_african = os.path.join(save_dir_african, fig_fn+"_african.png")
+
+        cat_frames(video_frames_raw, fig_fp=fig_fp_raw)
+        stack_frames(video_frames_raw, fig_fp=fig_fp_stack_raw)
+        stack_frames([draw_patches(f) for f in video_frames_raw], fig_fp=fig_fp_stack_patch)
 
         video_frames1 = [Image.fromarray(video_frames1[i]) for i in [1, 2, 3, 4, 5, 7]]
         video_frames2 = [Image.fromarray(video_frames2[i]) for i in [1, 2, 3, 4, 5, 7]]
-        plot_contrastive_learning_structure(video_frames1, video_frames2, fig_fp=os.path.join(save_dir_african, fig_fn+"_african.png"))
+        plot_contrastive_learning_structure(video_frames1, video_frames2, fig_fp=fig_fp_african)
+
+        print("file saved to ", fig_fp_raw)
+        print("file saved to ", fig_fp_stack_raw)
+        print("file saved to ", fig_fp_stack_patch)
+        print("file saved to ", fig_fp_african)
 
         # for idx, frame in enumerate(video_frames_raw):
         #     fig_fp_raw = os.psth.join(save_dir_structure, fig_fn+"_raw_%02i.png"%idx)
