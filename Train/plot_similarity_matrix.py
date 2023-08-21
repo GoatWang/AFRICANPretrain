@@ -90,7 +90,6 @@ def plot_contrastive_learning_structure(images_ci, images_ri, color='black', pad
     if fig_fp is None:
         fig_fp = os.path.join(os.path.dirname(__file__), "temp", 'SimilarityMatrix.png')
     
-    Path(os.path.dirname(fig_fp)).mkdir(exist_ok=True, parents=True)
     canvas.resize((716, 716)).save(fig_fp)
 
 # if __name__ == "__main__":
@@ -110,6 +109,9 @@ def main(_config):
     save_dir_african = os.path.join(_config['temp_dir'], "AFRICANSimilarityMatrix")
     save_dir_frame_concat = os.path.join(_config['temp_dir'], "FrameConcat")
     save_dir_frame_stack = os.path.join(_config['temp_dir'], "FrameStack")
+    Path(save_dir_african).mkdir(exist_ok=True, parents=True)
+    Path(save_dir_frame_concat).mkdir(exist_ok=True, parents=True)
+    Path(save_dir_frame_stack).mkdir(exist_ok=True, parents=True)
 
     for idx in np.random.choice(range(len(dataset_valid)), 30):
         video_fp, video_frames_raw, video_frames1, video_frames2 = dataset_valid[idx]
