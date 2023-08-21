@@ -14,7 +14,8 @@ def write_font(draw, text, x, y, anchor="mm", font_size=80, color='white'):
     x, y: center of the text
     anchor: https://pillow.readthedocs.io/en/stable/handbook/text-anchors.html#text-anchors
     """
-    font = ImageFont.truetype("Arial Unicode.ttf", size=font_size)
+    # font = ImageFont.truetype("Arial Unicode.ttf", size=font_size) # For Mac
+    font = ImageFont.truetype(os.path.join(os.path.dirname(__file__), "fonts/arimo/Arimo-Regular.ttf"), size=font_size) # For Mac
     draw.text((x, y), text, fill=color, font=font, anchor=anchor)
 
 def draw_3points(h, w, color='white'):
@@ -117,8 +118,6 @@ def main(_config):
     for idx in np.random.choice(range(len(dataset_valid)), 30):
         video_fp, video_frames_raw, video_frames1, video_frames2 = dataset_valid[idx]
         fig_fn = os.path.basename(video_fp).split('.')[0]
-
-
 
         cat_frames(video_frames_raw, fig_fp=os.path.join(save_dir_frame_concat, fig_fn+".png"))
         stack_frames(video_frames_raw, fig_fp=os.path.join(save_dir_frame_stack, fig_fn+".png"))
