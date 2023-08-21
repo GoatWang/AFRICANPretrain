@@ -88,7 +88,7 @@ class AnimalKingdomDatasetVisualize(AnimalKingdomDataset):
             return video_frames, video_tensor
         
         elif self.mode == "simmat":
-            video_frames_raw_out = (video_frames_raw.detach().cpu().numpy().transpose(0, 2, 3, 1) * 255).astype("uint8")
+            video_frames_raw_out = (video_frames_raw.detach().cpu().numpy().transpose(0, 2, 3, 1)).astype("uint8")
 
             video_frames1 = self.video_aug(video_frames_raw, self.video_transform).detach().cpu().numpy()
             video_frames1 = np.clip(video_frames1 * 0.45 + 0.225, 0, 1)
