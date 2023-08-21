@@ -134,9 +134,9 @@ def main(_config):
         plot_contrastive_learning_structure(video_frames1, video_frames2, fig_fp=fig_fp_african)
 
         for idx, frame in enumerate(video_frames_raw):
-            fig_fp_raw = os.psth.join(save_dir_single, fig_fn+"_raw_%02i.png"%idx)
+            fig_fp_raw = os.path.join(save_dir_single, fig_fn+"_raw_%02i.png"%idx)
             cv2.imwrite(fig_fp_raw, frame)
-            fig_fp_pat = os.psth.join(save_dir_single, fig_fn+"_pat_%02i.png"%idx)
+            fig_fp_pat = os.path.join(save_dir_single, fig_fn+"_pat_%02i.png"%idx)
             cv2.imwrite(fig_fp_pat, draw_patches(frame))
 
         print("file saved to ", fig_fp_raw)
