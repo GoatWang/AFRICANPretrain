@@ -110,6 +110,8 @@ def main(_config):
     save_dir_african = os.path.join(_config['temp_dir'], "AFRICANSimilarityMatrix")
     save_dir_frame_concat = os.path.join(_config['temp_dir'], "FrameConcat")
     save_dir_frame_stack = os.path.join(_config['temp_dir'], "FrameStack")
+    save_dir_single = os.path.join(_config['temp_dir'], "Single")
+
     Path(save_dir_african).mkdir(exist_ok=True, parents=True)
     Path(save_dir_frame_concat).mkdir(exist_ok=True, parents=True)
     Path(save_dir_frame_stack).mkdir(exist_ok=True, parents=True)
@@ -131,16 +133,18 @@ def main(_config):
         video_frames2 = [Image.fromarray(video_frames2[i]) for i in [1, 2, 3, 4, 5, 7]]
         plot_contrastive_learning_structure(video_frames1, video_frames2, fig_fp=fig_fp_african)
 
+        for idx, frame in enumerate(video_frames_raw):
+            fig_fp_raw = os.psth.join(save_dir_single, fig_fn+"_raw_%02i.png"%idx)
+            cv2.imwrite(fig_fp_raw, frame)
+            fig_fp_pat = os.psth.join(save_dir_single, fig_fn+"_pat_%02i.png"%idx)
+            cv2.imwrite(fig_fp_pat, draw_patches(frame))
+
         print("file saved to ", fig_fp_raw)
         print("file saved to ", fig_fp_stack_raw)
         print("file saved to ", fig_fp_stack_patch)
         print("file saved to ", fig_fp_african)
+        print("==================")
 
-        # for idx, frame in enumerate(video_frames_raw):
-        #     fig_fp_raw = os.psth.join(save_dir_structure, fig_fn+"_raw_%02i.png"%idx)
-        #     cv2.imwrite(fig_fp_raw, frame)
-        #     fig_fp_pat = os.psth.join(save_dir_structure, fig_fn+"_pat_%02i.png"%idx)
-        #     cv2.imwrite(fig_fp_pat, draw_patches(frame))
 
 
 
