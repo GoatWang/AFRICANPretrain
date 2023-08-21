@@ -115,6 +115,7 @@ def main(_config):
     Path(save_dir_african).mkdir(exist_ok=True, parents=True)
     Path(save_dir_frame_concat).mkdir(exist_ok=True, parents=True)
     Path(save_dir_frame_stack).mkdir(exist_ok=True, parents=True)
+    Path(save_dir_single).mkdir(exist_ok=True, parents=True)
 
     for idx in np.random.choice(range(len(dataset_valid)), 30):
         video_fp, video_frames_raw, video_frames1, video_frames2 = dataset_valid[idx]
