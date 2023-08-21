@@ -73,7 +73,8 @@ class AnimalKingdomDatasetVisualize(AnimalKingdomDataset):
         mode: {"simmat", "attnmap"}
         """
         super().__init__(config, split)
-        self.video_transform, self.video_transform_norm = VideoTransformVisualize()
+        self.video_transform = VideoTransformTorch(mode='train')  # NOTICE: all split shuould be augmentated
+        self.video_transform_norm = VideoTransformVisualize()
 
         self.mode = mode
 
