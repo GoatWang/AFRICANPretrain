@@ -117,6 +117,7 @@ def main(_config):
 
         cat_frames(video_frames_raw, fig_fp=os.path.join(save_dir_frame_concat, fig_fn+".png"))
         stack_frames(video_frames_raw, fig_fp=os.path.join(save_dir_frame_stack, fig_fn+".png"))
+        stack_frames([draw_patches(f) for f in video_frames_raw], fig_fp=os.path.join(save_dir_frame_stack, fig_fn+"_patched.png"))
         plot_contrastive_learning_structure(video_frames1[[1, 2, 3, 4, 5, 7]], video_frames2[[1, 2, 3, 4, 7]], color='white', pad=30, gap=30, fig_fp=os.path.join(save_dir_african, fig_fn+"_african.png"))
 
         # for idx, frame in enumerate(video_frames_raw):
