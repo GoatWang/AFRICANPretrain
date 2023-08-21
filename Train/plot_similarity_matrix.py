@@ -89,50 +89,44 @@ def plot_contrastive_learning_structure(images_ci, images_ri, color='black', pad
     # Save the final image as a PNG file
     if fig_fp is None:
         fig_fp = os.path.join(os.path.dirname(__file__), "temp", 'SimilarityMatrix.png')
+    
+    Path(os.path.dirname(fig_fp)).mkdir(exist_ok=True, parents=True)
     canvas.resize((716, 716)).save(fig_fp)
 
-if __name__ == "__main__":
-    # Define your 8 images as numpy ndarrays
-    n_rows, n_cols = 8, 8
-    images_ci = [Image.fromarray((np.random.rand(224, 224, 3) * 255).astype(np.uint8))] * n_cols
-    images_ri = [Image.fromarray((np.random.rand(224, 224, 3) * 255).astype(np.uint8))] * n_rows
-    plot_contrastive_learning_structure(np.array(images_ci)[[1, 2, 3, 4, 5, 7]], np.array(images_ri)[[1, 2, 3, 4, 5, 7]])
+# if __name__ == "__main__":
+#     # Define your 8 images as numpy ndarrays
+#     n_rows, n_cols = 8, 8
+#     images_ci = [Image.fromarray((np.random.rand(224, 224, 3) * 255).astype(np.uint8))] * n_cols
+#     images_ri = [Image.fromarray((np.random.rand(224, 224, 3) * 255).astype(np.uint8))] * n_rows
+#     plot_contrastive_learning_structure(np.array(images_ci)[[1, 2, 3, 4, 5, 7]], np.array(images_ri)[[1, 2, 3, 4, 5, 7]])
 
-# @ex.automain
-# def main(_config):
-#     _config = copy.deepcopy(_config)
-#     video_id = _config['pp_video_id']
+@ex.automain
+def main(_config):
+    _config = copy.deepcopy(_config)
 
-#     save_dir = os.path.join("/notebooks/VideoFrameIdentityNetwork/Train/temp", "samples", str(video_id).zfill(5))
-#     raw_dir = os.path.join(save_dir, "raw")
-#     patches_dir = os.path.join(save_dir, "patches")
-#     Path(raw_dir).mkdir(exist_ok=True, parents=True)
-#     Path(patches_dir).mkdir(exist_ok=True, parents=True)
+    dataset_valid = AnimalKingdomDatasetVisualize(_config, split="val", mode="simmat")
+    _config['max_steps'] = 200000
 
-#     dataset_valid = AnimalKingdomDatasetVisualize(_config, split="val", mode="simmat")
-#     _config['max_steps'] = 200000
+    save_dir_african = os.path.join(_config['temp_dir'], "AFRICANSimilarityMatrix")
+    save_dir_frame_concat = os.path.join(_config['temp_dir'], "FrameConcat")
+    save_dir_frame_stack = os.path.join(_config['temp_dir'], "FrameStack")
 
-#     save_dir_frame_sim = os.path.join(_config['temp_dir'], "FrameSimilarity")
-#     save_dir_sim_mat = os.path.join(_config['temp_dir'], "SimilarityMatrix")
-#     save_dir_structure = os.path.join(_config['temp_dir'], "Structure")
+    for idx in np.random.choice(range(len(dataset_valid)), 30):
+        video_fp, video_frames_raw, video_frames1, video_frames2 = dataset_valid[idx]
+        fig_fn = os.path.basename(video_fp).split('.')[0]
 
-#     for idx in np.random.choice(range(len(dataset_valid)), 30):
-#         video_fp, video_frames_raw, video_frames1, video_frames2 = dataset_valid[idx]
-#         fig_fn = os.path.basename(video_fp).split('.')[0]
+        cat_frames(video_frames_raw, fig_fp=os.path.join(save_dir_frame_sim, fig_fn+".png"))
+        stack_frames(video_frames_raw, fig_fp=os.path.join(save_dir_sim_mat, fig_fn+"_raw.png"))
+        plot_contrastive_learning_structure(video_frames1[[1, 2, 3, 4, 5, 7]], video_frames2[[1, 2, 3, 4, 7]], color='white', pad=30, gap=30, fig_fp=os.path.join(save_dir_african, fig_fn+"_african.png"))
 
-#         cat_frames(video_frames_raw, fig_fp=os.path.join(save_dir_frame_sim, fig_fn+".png"))
-#         stack_frames(video_frames_raw, fig_fp=os.path.join(save_dir_sim_mat, fig_fn+"_raw.png"))
-#         plot_contrastive_learning_structure(video_frames1[[1, 2, 3, 4, 5, 7]], video_frames2[[1, 2, 3, 4, 7]], color='white', pad=30, gap=30, fig_fp=os.path.join(save_dir_sim_mat, fig_fn+"_simmat.png"))
+        cat_frames(video_frames1, fig_fp=os.path.join(save_dir_frame_concat, fig_fn+"_frame_concat.png"))
+        stack_frames(video_frames1, fig_fp=os.path.join(save_dir_frame_stack, fig_fn+"_frame_stack.png"))
 
-#         for idx, frame in enumerate(video_frames_raw):
-#             fig_fp_raw = os.psth.join(save_dir_structure, fig_fn+"_raw_%02i.png"%idx)
-#             cv2.imwrite(fig_fp_raw, frame)
-#             fig_fp_pat = os.psth.join(save_dir_structure, fig_fn+"_pat_%02i.png"%idx)
-#             cv2.imwrite(fig_fp_pat, draw_patches(frame))
-
-
-
-
+        # for idx, frame in enumerate(video_frames_raw):
+        #     fig_fp_raw = os.psth.join(save_dir_structure, fig_fn+"_raw_%02i.png"%idx)
+        #     cv2.imwrite(fig_fp_raw, frame)
+        #     fig_fp_pat = os.psth.join(save_dir_structure, fig_fn+"_pat_%02i.png"%idx)
+        #     cv2.imwrite(fig_fp_pat, draw_patches(frame))
 
 
 
