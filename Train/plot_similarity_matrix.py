@@ -148,4 +148,12 @@ def main(_config):
 
 
 
+# %cd /notebooks
+# !python3 VideoFrameIdentityNetwork/Train/plot_similarity_matrix.py with 'batch_size=1' 'device="cuda"' \
+# 'data_dir="/storage/AnimalKingdom/action_recognition"' \
+# 'clip_fp="/notebooks/VideoFrameIdentityNetwork/Train/pretrain/ViT-L-14.pt"'
+
+# %cd /notebooks/VideoFrameIdentityNetwork/Train
+# !tar -cvzf temp.tar.gz temp
+# %cd /notebooks
 
